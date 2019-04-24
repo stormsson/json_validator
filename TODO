@@ -1,6 +1,9 @@
+Schema:
+  ☐ handle non mandatory fields
+  ☐ value dependant validation
+  if field x = "y" then apply z schema
+
 Rules:
-  ☐ Mandatory Field
-  ☐ Regexp
   ☐ Multiple
     ☐ Exact number
-  ☐
+  ☐ Options (ex: a|b|c)
