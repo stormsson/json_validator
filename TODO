@@ -7,3 +7,6 @@ Rules:
   ☐ Multiple
     ☐ Exact number
   ☐ Options (ex: a|b|c)
+
+RegexpRule:
+ ☐ how to pass flags from json schema to python class ?

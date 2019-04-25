@@ -3,7 +3,7 @@ from abc import abstractmethod
 class BaseRule():
     def __init__(self, mandatory=False, allow_empty=True, **kwargs):
         self.allow_empty = allow_empty
-        self.mandatory=mandatory
+        self.mandatory = mandatory
 
 
     def validate(self, value):

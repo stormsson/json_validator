@@ -3,6 +3,7 @@ import importlib
 from validator.rules.base_rule import BaseRule
 from validator.rules.string_rule import StringRule
 from validator.rules.number_rule import NumberRule
+from validator.rules.regexp_rule import RegexpRule
 
 class Schema(BaseRule):
     def __init__(self, json_validation_schema, **kwargs):
@@ -20,15 +21,19 @@ class Schema(BaseRule):
         return "validator.rules."+typename+"_rule"
 
     def _createValidator(self, validator_schema):
-        t = validator_schema["validator_type"].lower()
+        t = validator_schema["validator"].lower()
         if t == "string":
-            return StringRule(**validator_schema)
+            validator = StringRule(**validator_schema)
         elif t == "number":
-            return NumberRule(**validator_schema)
+            validator = NumberRule(**validator_schema)
+        elif t == "regexp":
+            validator = RegexpRule(**validator_schema)
         elif t == "object":
-            return Schema(validator_schema["schema"], **validator_schema)
+            validator = Schema(**validator_schema)
         else:
-            pass
+            raise ValueError("Unknown validator type")
+
+        return validator
 
     def _createValidators(self, schema):
 

@@ -1,7 +1,8 @@
 import re
 from validator.rules.base_rule import BaseRule
+from validator.rules.string_rule import StringRule
 
-class RegexpRule(BaseRule):
+class RegexpRule(StringRule):
     def __init__(self, pattern, flags=0, **kwargs):
         self.pattern = pattern
         self.re = re.compile(pattern, flags)
