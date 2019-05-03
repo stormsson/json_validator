@@ -2,11 +2,17 @@ Schema:
   ☐ handle non mandatory fields
   ☐ value dependant validation
   if field x = "y" then apply z schema
+  ☐ named schema
+  ☐ parent reference ?
+
+String:
+ ✔ minLenght @done (19-05-03 10:25)
+ ✔ maxLenght @done (19-05-03 10:25)
 
 Rules:
-  ☐ Multiple
-    ☐ Exact number
-  ☐ Options (ex: a|b|c)
+  ✔ Multiple validation (ex: a|b|c) @done (19-05-03 23:04)
+  ☐ array validator
+    ☐ number of elements
 
 RegexpRule:
  ☐ how to pass flags from json schema to python class ?
