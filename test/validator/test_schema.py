@@ -32,14 +32,23 @@ class TestSchema(unittest.TestCase):
         with self.assertRaises(TypeError):
             x = Schema(self.missing_param_regexp_schema)
 
-    def test_schema_creates_rule(self):
+    def test_schema_creates_array_of_rules(self):
         for val_type, val_class in self.base_validators.items():
             s = {
                 "key": { "validator": val_type },
             }
 
             x = Schema(s)
-            self.assertEqual(x.rules["key"].__class__.__name__, val_class)
+            self.assertTrue(isinstance(x.rules["key"], list))
+
+    def test_schema_creates_rule_for_validator_class(self):
+        for val_type, val_class in self.base_validators.items():
+            s = {
+                "key": { "validator": val_type },
+            }
+
+            x = Schema(s)
+            self.assertEqual(x.rules["key"][0].__class__.__name__, val_class)
 
     def test_schema_creates_regexp_rule(self):
         s = {
@@ -47,8 +56,25 @@ class TestSchema(unittest.TestCase):
         }
 
         x = Schema(s)
-        self.assertEqual(x.rules["key"].__class__.__name__, "RegexpRule")
+        self.assertEqual(x.rules["key"][0].__class__.__name__, "RegexpRule")
 
+    def test_schema_creates_object_rule(self):
+        s = {
+            "key": { "validator": "object", "json_validation_schema":{} },
+        }
+
+        x = Schema(s)
+        self.assertEqual(x.rules["key"][0].__class__.__name__, "Schema")
+
+
+    def test_schema_creates_default_parent_references(self):
+        s = {
+            "key": { "validator": "object", "json_validation_schema":{} },
+        }
+
+        x = Schema(s)
+        self.assertEqual(x.parent_schema, None)
+        self.assertEqual(x, x.rules["key"][0].parent_schema)
 
 if __name__ == '__main__':
     unittest.main()

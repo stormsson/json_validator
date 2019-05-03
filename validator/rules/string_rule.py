@@ -9,12 +9,16 @@ class StringRule(BaseRule):
     def validate(self, value):
         base_validation = super().validate(value)
 
-        composite_result = base_validation
-        if self.minlength:
-            composite_result = composite_result and (len(value) >= self.minlength)
 
-        if self.maxlength:
-            composite_result = composite_result and (len(value) <= self.maxlength)
+        composite_result = base_validation and isinstance(value, str)
 
+        # if base validation failed or the item is not a string
+        # ignore further checks
+        if composite_result:
+            if self.minlength:
+                composite_result = composite_result and (len(value) >= self.minlength)
 
-        return isinstance(value, str) and composite_result
+            if self.maxlength:
+                composite_result = composite_result and (len(value) <= self.maxlength)
+
+        return composite_result
