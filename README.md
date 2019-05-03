@@ -1,4 +1,4 @@
-## Validators
+## Available Validators
 
 ### Base Rule
 
@@ -15,11 +15,11 @@ allow_empty | True | No | If the field is present, should an empty value be allo
 
 ### Number
 
-asdf
+TODO
 
 ### Object
 
-asdf
+TODO
 
 ### Regexp
 
@@ -34,13 +34,29 @@ Check [Python documentation] (https://docs.python.org/3.6/library/re.html#re.mat
 
 ### String
 
-asdf
+Parameter | Default Value | Required Parameter | Description
+----------|----------|----------|----------
+minlength | None | No | In order to positively validate, the string must be at least `minlength` character long
+maxlength | None | No | In order to positively validate, the string must be at maximum `maxlength` character long
+
+#### Length and allow_empty parameters priority on empty string validation
+
+** Example **
+
+allow_empty | minlength | maxlength | result
+-------|-------|-------|-------
+True | 5 | - | False
+True | - | 5 | True
+
+The default value for `allow_empty` is `True`, the following behavior occurs when a length parameter is provided:
+
+If `allow_empty=True` and `minlength` is provided, the validator returns `False` if an empty string is provided
+
+If `allow_empty=True` and `maxlength` is provided, the validator returns `True` if an empty string is provided
 
 
 
-
-
-##Testing
+## Testing
 
 Run test with
 
