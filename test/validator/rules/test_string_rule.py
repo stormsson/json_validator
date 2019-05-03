@@ -32,6 +32,14 @@ class TestStringRule(unittest.TestCase):
         self.assertTrue(x.validate("abcd"))
         self.assertFalse(x.validate("abcdefg"))
 
+    def test_minmaxlength(self):
+        x = StringRule(minlength=2, maxlength=3)
+
+        self.assertFalse(x.validate("a"))
+        self.assertTrue(x.validate("ab"))
+        self.assertTrue(x.validate("abc"))
+        self.assertFalse(x.validate("abcd"))
+
     def test_maxlength_with_allow_empty(self):
         x = StringRule(allow_empty=False, maxlength=4)
         self.assertFalse(x.validate(""))
