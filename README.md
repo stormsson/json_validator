@@ -1,7 +1,6 @@
 ## Quickstart
 
-Check the examples folder: it's quite straightforward.
-
+Soon...
 
 ## Schemas
 
