@@ -67,14 +67,7 @@ class TestSchema(unittest.TestCase):
         self.assertEqual(x.rules["key"][0].__class__.__name__, "Schema")
 
 
-    def test_schema_creates_default_parent_references(self):
-        s = {
-            "key": { "validator": "object", "json_validation_schema":{} },
-        }
 
-        x = Schema(s)
-        self.assertEqual(x.parent_schema, None)
-        self.assertEqual(x, x.rules["key"][0].parent_schema)
 
 if __name__ == '__main__':
     unittest.main()

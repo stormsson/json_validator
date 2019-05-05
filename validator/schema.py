@@ -11,10 +11,11 @@ class Schema(BaseRule):
 
         self.rules = {}
         self.named_rules = {}
-        self.parent_schema = None
+
         self.json_validation_schema = json_validation_schema
 
         self._createValidators(self.json_validation_schema)
+
 
     def _createValidator(self, validator_schema):
         t = validator_schema["validator"].lower()
@@ -42,16 +43,14 @@ class Schema(BaseRule):
             else:
                 parameters = validator_schema
 
-
             if t == "string":
-                validator = StringRule(**parameters)
+                validator = StringRule(**parameters, parent=self)
             elif t == "number":
-                validator = NumberRule(**parameters)
+                validator = NumberRule(**parameters, parent=self)
             elif t == "regexp":
-                validator = RegexpRule(**parameters)
+                validator = RegexpRule(**parameters, parent=self)
             elif t == "object":
-                validator = Schema(**parameters)
-                validator.parent_schema = self
+                validator = Schema(**parameters, parent=self)
             else:
                 raise ValueError("Unknown validator type: %s" % t)
 

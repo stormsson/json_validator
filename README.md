@@ -1,3 +1,8 @@
+## Quickstart
+
+Check the examples folder: it's quite straightforward.
+
+
 ## Schemas
 
 In order to validate a json document, a Schema must be provided.
@@ -7,6 +12,13 @@ or
 `s = Schema(schema_object)`
 
 `schema_object` is a dictionary that can be hardcoded, or may be loaded from a json file
+
+The dictionary is composed as follow
+```
+{
+    "field_name": {validator_object}
+}
+```
 
 **Example**
 
@@ -39,6 +51,7 @@ Parameter | Default Value | Required Parameter | Description
 ----------|----------|----------|----------
 mandatory | False | No |Defines is the field must be present in the data provided
 allow_empty | True | No | If the field is present, should an empty value be allowed ?
+parent | None | No | reference to the parent schema, if available. Used to create the validator hierarchy.
 
 
 
