@@ -15,6 +15,14 @@ class TestBaseRule(unittest.TestCase):
         self.assertFalse(x.validate(""))
         self.assertFalse(x.validate(None))
 
+
+    def test_assign_name(self):
+        rule_name = "asdfoobar"
+        x = BaseRule(name=rule_name)
+
+        self.assertEqual(x.name, rule_name)
+
+
     def test_schema_creates_default_parent_references(self):
         s = {
             "key": { "validator": "object", "json_validation_schema":{} },

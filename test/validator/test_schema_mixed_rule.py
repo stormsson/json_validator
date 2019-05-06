@@ -4,7 +4,7 @@ from validator.rules.string_rule import StringRule
 from validator.rules.regexp_rule import RegexpRule
 from validator.schema import Schema
 
-class TestMixedRule(unittest.TestCase):
+class TestSchemaMixedRule(unittest.TestCase):
 
     def test_mixed_validation_creates_rules(self):
         s = {
@@ -16,6 +16,20 @@ class TestMixedRule(unittest.TestCase):
 
         x = Schema(s)
 
+        self.assertTrue(isinstance(x.rules["key"], list))
+        self.assertEqual(2, len(x.rules["key"]))
+
+    def test_mixed_validation_creates_rule_with_empty_validator(self):
+        # if the parameters object does not contain the key of the validator
+        # a {} object is used
+        s = {
+            "key": { "validator": "number|regexp", "parameters": {
+                # "number":{}, #=> removed
+                "regexp":{ "pattern": "test_string" },
+            } },
+        }
+
+        x = Schema(s)
         self.assertTrue(isinstance(x.rules["key"], list))
         self.assertEqual(2, len(x.rules["key"]))
 

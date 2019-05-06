@@ -67,8 +67,6 @@ class TestSchema(unittest.TestCase):
         self.assertEqual(x.rules["key"][0].__class__.__name__, "Schema")
 
 
-
-
 if __name__ == '__main__':
     unittest.main()
 

@@ -1,9 +1,10 @@
 from abc import abstractmethod
 
 class BaseRule():
-    def __init__(self, mandatory=False, allow_empty=True, parent=None, **kwargs):
+    def __init__(self, mandatory=False, allow_empty=True, parent=None, name=None, **kwargs):
         self.allow_empty = allow_empty
         self.mandatory = mandatory
+        self.name = name
 
         self.parent_schema = parent
         self.top_schema = None
@@ -17,6 +18,12 @@ class BaseRule():
 
         if reference != self:
             self.top_schema = reference
+
+    def _get_top_schema(self):
+        if self.top_schema is None:
+            self._set_top_schema()
+
+        return self.top_schema
 
     def validate(self, value):
         if not self.allow_empty:

@@ -39,7 +39,13 @@ class Schema(BaseRule):
             # if not present, then the 'validator_schema' is the parameters array
 
             if multiple_validation:
-                parameters = validator_schema["parameters"][t]
+                # for each validator check the 'parameters' dictionary for its parameter
+                # if no key is found, an empty dictionary is used.
+                # some validator require mandatory parameters, not passing them will cause a TypeError
+                try:
+                    parameters = validator_schema["parameters"][t]
+                except Exception as e:
+                    parameters = {}
             else:
                 parameters = validator_schema
 
@@ -53,6 +59,14 @@ class Schema(BaseRule):
                 validator = Schema(**parameters, parent=self)
             else:
                 raise ValueError("Unknown validator type: %s" % t)
+
+            ## add the validator to the named_rules validator
+            if validator.name is not None:
+                top = self._get_top_schema()
+                if top:
+                    top.named_rules[validator.name] = validator
+                else:
+                    self.named_rules[validator.name] = validator
 
             validators.append(validator)
 
