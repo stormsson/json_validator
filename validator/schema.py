@@ -17,6 +17,20 @@ class Schema(BaseRule):
         self._createValidators(self.json_validation_schema)
 
 
+    def _get_named_rule(self, name):
+        ts = self._get_top_schema()
+
+        if not ts:
+            ts = self
+
+        try:
+            named_rule = ts.named_rules[name]
+        except Exception as e:
+            named_rule = None
+
+        return named_rule
+
+
     def _createValidator(self, validator_schema):
         t = validator_schema["validator"].lower()
         validators = []
@@ -34,39 +48,48 @@ class Schema(BaseRule):
         # foreach validator type
         for t in split_validators:
 
-            # try to check if there is a 'parameters' parameter in the validator_schema:
-            # if present, each key inside this parameter will contain the parameters for the specific validator
-            # if not present, then the 'validator_schema' is the parameters array
+            # if a named rule with the same namealready exists,
+            # it has the precedence over everything else
 
-            if multiple_validation:
-                # for each validator check the 'parameters' dictionary for its parameter
-                # if no key is found, an empty dictionary is used.
-                # some validator require mandatory parameters, not passing them will cause a TypeError
-                try:
-                    parameters = validator_schema["parameters"][t]
-                except Exception as e:
-                    parameters = {}
+            named_rule = self._get_named_rule(t)
+            if named_rule:
+                validator = named_rule
             else:
-                parameters = validator_schema
 
-            if t == "string":
-                validator = StringRule(**parameters, parent=self)
-            elif t == "number":
-                validator = NumberRule(**parameters, parent=self)
-            elif t == "regexp":
-                validator = RegexpRule(**parameters, parent=self)
-            elif t == "object":
-                validator = Schema(**parameters, parent=self)
-            else:
-                raise ValueError("Unknown validator type: %s" % t)
+                # try to check if there is a 'parameters' parameter in the validator_schema:
+                # if present, each key inside this parameter will contain the parameters for the specific validator
+                # when a multiple validation is requested.
+                # If not present, then the whole 'validator_schema' already is the parameters array
 
-            ## add the validator to the named_rules validator
-            if validator.name is not None:
-                top = self._get_top_schema()
-                if top:
-                    top.named_rules[validator.name] = validator
+                if multiple_validation:
+                    # Check the 'parameters' dictionary for the validator parameter
+                    # if no key is found, an empty dictionary is used.
+                    # Some validator require mandatory parameters, not passing them will cause a TypeError
+                    try:
+                        parameters = validator_schema["parameters"][t]
+                    except Exception as e:
+                        parameters = {}
                 else:
-                    self.named_rules[validator.name] = validator
+                    parameters = validator_schema
+
+                if t == "string":
+                    validator = StringRule(**parameters, parent=self)
+                elif t == "number":
+                    validator = NumberRule(**parameters, parent=self)
+                elif t == "regexp":
+                    validator = RegexpRule(**parameters, parent=self)
+                elif t == "object":
+                    validator = Schema(**parameters, parent=self)
+                else:
+                    raise ValueError("Unknown validator type: %s" % t)
+
+                ## add the validator to the named_rules validator
+                if validator.name is not None:
+                    top = self._get_top_schema()
+                    if top:
+                        top.named_rules[validator.name] = validator
+                    else:
+                        self.named_rules[validator.name] = validator
 
             validators.append(validator)
 

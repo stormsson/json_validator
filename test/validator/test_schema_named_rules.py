@@ -48,6 +48,41 @@ class TestSchemaNamedRules(unittest.TestCase):
         #subkey schema
         self.assertEqual(x.rules["key"][0].named_rules, {})
 
+    def test_get_named_rule_on_self(self):
+        validator_name = "test_name"
+        s = {
+            "key": { "validator": "regexp","pattern":".*", "name":validator_name },
+        }
+
+        x = Schema(s)
+        r = x._get_named_rule(validator_name)
+
+        self.assertIsNotNone(r)
+
+    def test_get_named_rule_on_top_schema(self):
+        validator_name = "test_name"
+        s = {
+            "named_validator_key": { "validator": "number", "name": validator_name },
+            "key": { "validator": "object", "json_validation_schema":{
+                "subkey": { "validator": validator_name }
+            }},
+        }
+
+        x = Schema(s)
+        named_validator = x.rules["named_validator_key"][0]
+
+        key_schema = x.rules["key"][0]
+        rule = key_schema._get_named_rule(validator_name)
+
+        # from the key schema the named validator from the top schema is retrieved
+        self.assertIsNotNone(rule)
+
+        # it is actually the same in the parent named_rules dictionary
+        self.assertEqual(rule, named_validator)
+
+        # it has been referenced in the subkey rule
+        self.assertEqual(key_schema.rules["subkey"][0], named_validator)
+
 
 
 if __name__ == '__main__':
