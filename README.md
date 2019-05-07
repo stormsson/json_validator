@@ -40,9 +40,14 @@ schema.json:
 
 ## Available Validators
 
+A validator is basically a dictionary with the `validator` key.
+
+All validators descend from `rules/base_rule`
+
 ### Base Rule
 
-The base rule is a common ancestor for every validation rule, and every parameter available to the base rule is therefore available to all derived validators.
+The base rule is a common ancestor for every validation rule.
+Every parameter available to the base rule is therefore available to all derived validators.
 
 New validators should be derived from this Validator.
 
@@ -50,11 +55,12 @@ Parameter | Default Value | Required Parameter | Description
 ----------|----------|----------|----------
 mandatory | False | No |Defines is the field must be present in the data provided
 allow_empty | True | No | If the field is present, should an empty value be allowed ?
+name | None | No | Assign a name to the validator. It will be stored in the named_rules dictionary of the top level schema.
 parent | None | No | reference to the parent schema, if available. Used to create the validator hierarchy.
 
 
 
-### Number
+### Number Rule
 
 Parameter | Default Value | Required Parameter | Description
 ----------|----------|----------|----------
@@ -71,7 +77,7 @@ force_type | None | No | Only allowed values are `int` or `float` (passed as a s
 ```
 
 
-### Object
+### Object Rule
 
 The object validator is basically a `Schema` instance
 
@@ -92,7 +98,7 @@ json_validation_schema | - | Yes | Schema to use for validation
 ```
 
 
-### Regexp
+### Regexp Rule
 
 Parameter | Default Value | Required Parameter | Description
 ----------|----------|----------|----------
@@ -114,7 +120,7 @@ Check if a string only contains digits:
 }
 ```
 
-### String
+### String Rule
 
 Parameter | Default Value | Required Parameter | Description
 ----------|----------|----------|----------
@@ -170,6 +176,54 @@ Allow a field that is a number or a string with minimum 10 characters
         }
     },
 }
+```
+
+
+## Named validators
+
+Often there could be the necessity to reuse the same validator.
+Adding a `name` parameter to the validator parameters will create a named rule.
+
+When creating a Schema, every validator has a reference to its container Schema. This allows the creation of a hierarchy.
+
+Named rules are stored in the top level schema.
+It is possible to fetch a named rule by using `Schema._get_named_rule(name)` ,therefore when creating a validator there is the possibility of reusing a named one.
+
+**It is necessary to define a named rule before using it**
+
+
+**Correct implementation example**
+
+```
+{
+    "field_1": { "validator": "regexp", "pattern":"\d{3}\-\d{8}", "name":"my_telephone_number_validator"},
+    "field_2": { "validator": "my_telephone_number_validator" }
+}
+```
+In this example, the `field_1` validator defines a regexp rule with a specific pattern.
+Since it is given a name, it is usable anywhere in the Schema from its definition downward.
+
+**Wrong implementation example**
+
+```
+{
+    "field_2": { "validator": "my_telephone_number_validator" },
+    "field_1": { "validator": "regexp", "pattern":"\d{3}\-\d{8}", "name":"my_telephone_number_validator"}
+}
+```
+
+
+### Named validator and mixed validation
+
+When using mixed validation it is possible to define named rules in the `parameters` dictionary
+
+**Example**
+
+```
+    "mixed":{ "validator": "my_number_rule|my_regexp_rule", "parameters":{
+        "my_number_rule": { "validator": "number", "name": "my_number_rule" },
+        "my_regexp_rule": { "validator": "regexp", "pattern":"pattern_\d+", "name": "my_regexp_rule" },
+    }}
 ```
 
 

@@ -83,6 +83,34 @@ class TestSchemaNamedRules(unittest.TestCase):
         # it has been referenced in the subkey rule
         self.assertEqual(key_schema.rules["subkey"][0], named_validator)
 
+    def test_named_mixed_rule_on_previous_definition(self):
+        s = {
+            "my_number_key": { "validator": "number", "name": "my_number_rule" },
+            "my_regexp_key": { "validator": "regexp", "pattern":"test_rule", "name": "my_regexp_rule" },
+            "mixed":{ "validator": "my_number_rule|my_regexp_rule"}
+        }
+
+        x = Schema(s)
+
+        self.assertTrue(x.validate({"mixed": 5}))
+        self.assertTrue(x.validate({"mixed": "test_rule"}))
+        self.assertFalse(x.validate({"mixed": "asdf"}))
+
+
+    def test_named_mixed_rule_on_self_definition(self):
+        s = {
+            "mixed":{ "validator": "my_number_rule|my_regexp_rule", "parameters":{
+                "my_number_rule": { "validator": "number", "name": "my_number_rule" },
+                "my_regexp_rule": { "validator": "regexp", "pattern":"test_rule", "name": "my_regexp_rule" },
+            }}
+        }
+
+        x = Schema(s)
+
+        self.assertTrue(x.validate({"mixed": 5}))
+        self.assertTrue(x.validate({"mixed": "test_rule"}))
+        self.assertFalse(x.validate({"mixed": "asdf"}))
+
 
 
 if __name__ == '__main__':

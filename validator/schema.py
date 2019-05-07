@@ -69,6 +69,12 @@ class Schema(BaseRule):
                         parameters = validator_schema["parameters"][t]
                     except Exception as e:
                         parameters = {}
+
+                    # A multiple validation is occurring, a parameter array is present
+                    # the parameter dictionary is the definition of a validator
+                    if ("validator" in parameters) :
+                        t = parameters["validator"]
+
                 else:
                     parameters = validator_schema
 
