@@ -1,9 +1,13 @@
+Errors:
+ ☐ raise a new ValidationError instead of boolean failing
+
 Schema:
-  ☐ handle non mandatory fields
+  ✔ handle non mandatory fields @high @done (19-05-12 19:54)
   ☐ value dependant validation
   if field x = "y" then apply z schema
-  ☐ named schema
-  ☐ parent reference ?
+  ✔ named schema @done (19-05-12 19:54)
+  ✔ parent reference @done (19-05-05 18:26)
+  ✔ top element reference @done (19-05-05 18:26)
 
 String:
  ✔ minLenght @done (19-05-03 10:25)

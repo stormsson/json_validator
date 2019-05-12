@@ -9,8 +9,12 @@ class Schema(BaseRule):
     def __init__(self, json_validation_schema, **kwargs):
         super().__init__(**kwargs)
 
+        if not isinstance(json_validation_schema, dict):
+            raise TypeError("Schema or Object Validator must have a dictionary as parameter")
+
         self.rules = {}
         self.named_rules = {}
+        self.mandatory_fields = []
 
         self.json_validation_schema = json_validation_schema
 
@@ -97,6 +101,7 @@ class Schema(BaseRule):
                     else:
                         self.named_rules[validator.name] = validator
 
+
             validators.append(validator)
 
         return validators
@@ -109,19 +114,45 @@ class Schema(BaseRule):
         for key, v in schema.items():
             self.rules[key] = self._createValidator(v)
 
+            # check mandatory requirement on validator
+            for r in self.rules[key]:
+                if r.mandatory == True:
+                    self.mandatory_fields.append(key)
+                    break
+
+
         # m = self._translateTypeToModuleName(schema["type"])
         # cls_name = self._translateTypeToClassName(schema["type"])
 
         # v = getattr(importlib.import_module(m), cls_name)
 
 
+    def _checkMandatoryFieldsArePresent(self, json_data):
 
-    def validate(self, value):
-        base_validation = super().validate(value)
-        result = True and base_validation
+        try:
+            all_fields = json_data.keys()
+
+        except Exception as e:
+            print(json_data)
+            return True
+
+        for field in self.mandatory_fields:
+            if field not in all_fields:
+                return False
+        return True
+
+    def validate(self, json_data):
+        base_validation = super().validate(json_data)
+
+        # if json_data is not a dictionary we stop everything
+        result = True and base_validation and isinstance(json_data, dict)
+
+        # check mandatory field presence
+        result = result and self._checkMandatoryFieldsArePresent(json_data)
+
         # apply rules validation only if base validation didn't already fail
         if result:
-            for key, v in value.items():
+            for key, v in json_data.items():
                 # if multiple validation is used, only one of the validators
                 # needs to be True in order to validate positively
                 if self._isMultipleValidationRule(key):

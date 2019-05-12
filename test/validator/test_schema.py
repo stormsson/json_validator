@@ -66,6 +66,24 @@ class TestSchema(unittest.TestCase):
         x = Schema(s)
         self.assertEqual(x.rules["key"][0].__class__.__name__, "Schema")
 
+    def test_schema_checks_mandatory_fields(self):
+        s = {
+            "key": { "validator": "regexp","pattern":".*", "mandatory": True },
+        }
+        x = Schema(s)
+        self.assertEqual(len(x.mandatory_fields), 1)
+        self.assertTrue(x.validate({"key":"value"}))
+        self.assertTrue(x.validate({"key":""}))
+        self.assertFalse(x.validate({}))
+
+        s = {
+            "key": { "validator": "object", "json_validation_schema":{}, "mandatory":True },
+        }
+
+        x = Schema(s)
+        self.assertTrue(x.validate({ "key": {} } ))
+
+
 
 if __name__ == '__main__':
     unittest.main()
