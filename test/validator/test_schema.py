@@ -17,7 +17,8 @@ class TestSchema(unittest.TestCase):
 
         self.base_validators = {
             "string": "StringRule",
-            "number": "NumberRule"
+            "number": "NumberRule",
+            "boolean":"BooleanRule",
         }
 
     def test_schema_raises_valueerror(self):
@@ -49,6 +50,14 @@ class TestSchema(unittest.TestCase):
 
             x = Schema(s)
             self.assertEqual(x.rules["key"][0].__class__.__name__, val_class)
+
+    def test_schema_creates_boolean_rule(self):
+        s = {
+            "key": { "validator": "boolean"},
+        }
+
+        x = Schema(s)
+        self.assertEqual(x.rules["key"][0].__class__.__name__, "BooleanRule")
 
     def test_schema_creates_regexp_rule(self):
         s = {

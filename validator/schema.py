@@ -3,6 +3,7 @@ import importlib
 from validator.rules.base_rule import BaseRule
 from validator.rules.string_rule import StringRule
 from validator.rules.number_rule import NumberRule
+from validator.rules.boolean_rule import BooleanRule
 from validator.rules.regexp_rule import RegexpRule
 
 class Schema(BaseRule):
@@ -84,6 +85,8 @@ class Schema(BaseRule):
 
                 if t == "string":
                     validator = StringRule(**parameters, parent=self)
+                elif t == "boolean":
+                    validator = BooleanRule(**parameters, parent=self)
                 elif t == "number":
                     validator = NumberRule(**parameters, parent=self)
                 elif t == "regexp":
